@@ -1,0 +1,27 @@
+{
+  "name": "blog",
+  "version": "1.0.1",
+  "description": "modified for production ",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "npm test",
+    "start": "nodemon app.js"
+  },
+  "author": "106",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "express-session": "^1.18.0",
+    "lodash": "^4.17.21",
+    "mongoose": "^8.0.3",
+    "node": "^21.2.0",
+    "nodemon": "^3.0.2",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0"
+  }
+}
