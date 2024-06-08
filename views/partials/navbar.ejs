@@ -1,4 +1,7 @@
 
+<script>
+  console.log(user);
+</script>
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
       <a class="navbar-brand" href="/">MyBlogs</a>
@@ -13,14 +16,14 @@
           <li class="nav-item">
             <a class="nav-link" href="/contact">Contact Me</a>
           </li>
-          <%if (user) { %>
+          <%if (User) { %>
             <li class="nav-item">
               <a class="nav-link" href="/compose">Compose</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/logout">Log Out</a>
             </li>
-          <%} else if(!user) {%>
+          <%} else if(!User){%>
           <li class="nav-item">
             <a class="nav-link" href="/login">Login</a>
           </li>

@@ -10,7 +10,12 @@ const LikesSchema = new mongoose.Schema ({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Post",
         required: [true,'']
-    },   
+    },
+    liked: {
+        type: Boolean,
+        required: true,
+        default: true
+    }   
   }, { timestamps: true });
   
 const Likes = mongoose.model("Likes", LikesSchema);

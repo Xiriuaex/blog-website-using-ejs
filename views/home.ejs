@@ -1,28 +1,31 @@
 <%- include('partials/header') -%>
-<%- include('partials/navbar') -%>
+<%- include('partials/navbar', { User: User }) -%>
 
 <script> 
-  async function likePost(id, liked) { //id, false
-    console.log(liked);
+  async function likePost(id, isLiked) {  
+   
     try {
       const response = await fetch(`/posts/${id}/like`, {
         method:"POST",
         headers: {
           'Content-Type': 'application/json'
         },  
-        body: JSON.stringify({ liked })
+        body: JSON.stringify({ liked: isLiked })
       });
+      
       if (!response.ok) {
         throw new Error(`Failed to like post ${response}`);
       }
+
       const contentType = response.headers.get('content-type');
      
       if (contentType && contentType.includes('application/json')) {
         const data = await response.json();
         
-        const heart=  document.getElementById(`like-button-${id}`);
-        const likeCount = data.liked ? heart.classList.add('liked') : heart.classList.remove('liked'); 
-        document.getElementById(`likes-count-${id}`).innerText = data.likes;
+        data.liked ? document.getElementById(`like-button-${id}`).classList.add('liked') : document.getElementById(`like-button-${id}`).classList.remove('liked'); 
+
+        document.getElementById(`likes-count-${id}`).textContent = data.likes;
+        
       } else { 
         console.warn('Response is not JSON', response); 
       }
@@ -42,10 +45,16 @@
         <p class="card-text"><%= post.post.substring(0,150)%></p>
         <div>
           <a href="/posts/<%= post._id%>" class="card-link" style="text-decoration: none; color: rgb(192, 162, 162)">Read More</a>
-          <a href="#" class="card-link" style="text-decoration: none; color: rgb(192, 162, 162)"><img src="public/like.png" alt=""></a>
-          <img src="public/like.png" alt="">
-          <p>Likes: <span id="likes-count-<%= post._id %>"><%= post.likes%></span></p>
-          <button class="heart <%= post.liked ? 'liked' : '' %>"  style="border:none;background:none;" id="like-button-<%= post._id %>" onclick="likePost('<%= post._id %>', '<%= post.liked %>')">&#9829;</button> 
+          <div class="like-box">
+            <button 
+              class="heart <%= Liked[post._id] ? 'liked' : '' %>" 
+              style="border:none;background:none;" 
+              id="like-button-<%= post._id %>" 
+              onclick="likePost('<%= post._id %>', '<%= Liked[post._id] %>')">
+              &#9829;
+            </button> 
+            <p id="likes-count-<%= post._id %>"><%= post.likes %></p>
+          </div>
         </div>
     </div> 
   </div>   

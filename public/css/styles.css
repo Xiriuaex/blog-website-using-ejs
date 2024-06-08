@@ -37,12 +37,21 @@ body {
 .heart {
   cursor: pointer;
   font-size: 30px;
-  color: grey;
+  color: grey; 
 }
 .liked {
   color: red;
 }
 
+.like-box {
+  font-size: 20px;
+  display: flex;
+  flex-direction: row;  
+}
+
+.like-box > p {
+ margin-top: 18px;
+}
 .postTitle {
   display: flex; 
 }

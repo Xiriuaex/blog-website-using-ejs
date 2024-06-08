@@ -64,28 +64,43 @@ function isAuthenticated(req, res, next) {
 
 //get all posts
 app.get("/", async (req,res) => {
-  const post = await Post.find({}).populate('author', 'name');
+  const posts = await Post.find({}).populate('author', 'name');
   const user = req.session._id;  
-  const likes = await Likes.countDocuments({postId: post._id});
+  const User = req.session.id;
+  let likesCount= {};
+ 
+  for (let post of posts) {
+        likesCount[post._id] = await Likes.countDocuments({ postId: post._id });
+  } 
 
     try {
-      const mappedPosts = post.map(post => ({
+      const mappedPosts = posts.map(post => ({
         _id: post._id,
         title: post.title,
         post: post.post, 
-        likes: likes,
+        likes: likesCount[post._id] || 0,
         author: post.author ? post.author.name : "Unknown"
     }));
+    
+    
+    let likedPosts = {};
+    
+    for (let post of mappedPosts) {
+      const liked = await Likes.findOne({ postId: post._id, userId: user });
+      likedPosts[post._id] = liked ? true : false;
+    };
 
-      res.render("home", {
-        posts: mappedPosts, user: user, likes: likes});
+    res.render("home", {
+      posts: mappedPosts, 
+      user: user,
+      User: User,
+      Liked: likedPosts
+    });
+
     }catch (err) {
       console.log(err)
     }
-});
-
-
-
+}); 
 
 //get specific post
 app.get("/posts/:postId", async (req, res) => {
@@ -165,7 +180,7 @@ app.post("/register", async (req, res) => {
 });
 
 //logout get
-app.get("/logout", (req, res) => { 
+app.get("/logout", (req, res, next) => { 
   req.logout(function (err) {
     if (err) {
       return next(err);
@@ -204,31 +219,27 @@ app.post('/posts/:id/like', isAuthenticated, async(req, res) => {
   
   try { 
     const postId = req.params.id;
-    let liked = req.body.liked; //false
+    let liked = req.body.liked; //true
     const userId = req.user._id; 
-    const existingLike = await Likes.findOne({postId, userId})
+
+    const existingLike = await Likes.findOne({postId, userId});
+
     if(existingLike) {
-      const likeCount = await Likes.countDocuments({ postId });
-      let number = likeCount-1;
-
-    const post = await Post.updateOne(
-        { _id: postId },
-        { $set: { likes: number, liked: !liked }}
-      );
-
       await Likes.deleteOne({postId, userId});
-      res.json({ likes: post.likes, liked: post.liked });
     } else {
       await Likes.create({postId, userId});
-      const likeCount = await Likes.countDocuments({ postId });
-      let number = likeCount+1;
-
-      const post = await Post.updateOne(
-        { _id: postId },
-        { $set: { likes: number, liked: !liked }}
-      )
-      res.json({ likes: post.likes, liked: post.liked });
     }
+
+     // Get the updated like count
+     const likeCount = await Likes.countDocuments({ postId });
+     
+     // Update the post with the new like count
+     const post = await Post.findByIdAndUpdate(
+      postId,
+      { $set: { likes: likeCount } },
+      { new: true }
+  );
+  return res.json({ post, likes: post.likes, liked: !existingLike });
   } catch (error) {
     console.log(error);
     res.status(500).send("An error occurred while updating the like count");

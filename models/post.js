@@ -16,12 +16,7 @@ const PostSchema = new mongoose.Schema ({
         required: [true, 'Post is required.'],
     },
     likes: {
-        type: Number,
-        default: 0,
-    },
-    liked: {
-        type: Boolean,
-        default: false
+        type: Number, 
     }
   });
   
