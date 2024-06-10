@@ -1,6 +1,6 @@
 <%- include('partials/header') -%>
 
-<div class="compose">
+<div class="compose" style="color: #2f3e3e; ">
 <h1>COMPOSE</h1>
 <form class="form" action="/compose" method="post">
   <label for="formGroupExampleInput" class="form-label">Title</label>
@@ -26,8 +26,13 @@
     ></textarea>
   </div>
   <div class="publishbtn">
-    <button type="submit" class="btn btn-primary">Publish</button>
+    <button type="submit" class="btn btn-dark">Publish</button>
   </div>
 </form> 
 
+</div>
+
+
+<div style="position: fixed; bottom: 0; width: 100%;">
+  <%- include('partials/footer') %>
 </div>

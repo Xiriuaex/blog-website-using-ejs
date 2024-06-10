@@ -1,10 +1,15 @@
 <%- include('partials/header') -%>
  
 
-<div class="box">
-  <h2 class="postTitle"><%= title%></h2>
-  <p><%= post%></p>
-  <p class="post-author">Written By <%= author%></p>
-</div>
+<div class="card bg-light">
+  <div class="card-body"> 
+      <h5 class="card-title"><%= title%></h5>
+      <h6 class="card-subtitle mb-2 text-body-secondary"><%= post.author%></h6>
+      <p class="card-text"><%= post%></p>
+      <p class="post-author">Written By <%= author%></p>
+  </div> 
+</div>   
 
-<%- include('partials/footer') -%>
+<div style="position: fixed; bottom: 0; width: 100%;">
+  <%- include('partials/footer') %>
+</div>

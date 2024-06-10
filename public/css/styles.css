@@ -6,6 +6,12 @@ body {
   display: flex; 
   flex-direction: column;
   justify-content: center; 
+  align-items: center;
+}
+
+.navbar {
+  background-color: #d4e8e5;
+  height: 15vh;
 }
 
 .box {
@@ -23,6 +29,18 @@ body {
   overflow: auto;
   border-radius: 15px;
   margin-bottom: 15%;
+}
+
+.card { 
+  position: relative;
+  width: 60vw;
+  height: 40vh;
+  margin-top: 13%;
+}
+
+.login {
+  position: relative;
+  color: #2f3e3e; 
 }
 
 .card { 
@@ -52,6 +70,7 @@ body {
 .like-box > p {
  margin-top: 18px;
 }
+
 .postTitle {
   display: flex; 
 }
@@ -66,7 +85,7 @@ body {
 } 
 
 .footer {
-  position: fixed; 
+  position: relative; 
   text-align: center;
   bottom: 0;
   left: 0;

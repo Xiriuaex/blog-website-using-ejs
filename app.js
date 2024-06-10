@@ -25,6 +25,7 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
+    cookie: { secure: false } // Set secure: true if using HTTPS
   })
 );
 app.use((req, res, next) => {
@@ -55,8 +56,8 @@ mongoose.connect(process.env.MONGODB_URI,
 
 
 function isAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-      return next();
+  if (req.isAuthenticated()) { 
+    return next();
   }else{
     res.redirect('/login');
   }
@@ -66,9 +67,15 @@ function isAuthenticated(req, res, next) {
 app.get("/", async (req,res) => {
   const posts = await Post.find({}).populate('author', 'name');
   const user = req.session._id;  
-  const User = req.session.id;
+  let isLoggedIn = false;
+  if(req.isAuthenticated()){
+    console.log("oaky");
+    isLoggedIn= true;
+  } else {
+    console.log("nope");
+  }
   let likesCount= {};
- 
+
   for (let post of posts) {
         likesCount[post._id] = await Likes.countDocuments({ postId: post._id });
   } 
@@ -93,7 +100,7 @@ app.get("/", async (req,res) => {
     res.render("home", {
       posts: mappedPosts, 
       user: user,
-      User: User,
+      isLoggedIn,
       Liked: likedPosts
     });
 
@@ -135,8 +142,9 @@ app.get("/login", (req, res) => {
 app.post("/login",
   passport.authenticate("local", {
     successRedirect: "/",
-    failureRedirect: "/login",
+    failureRedirect: '/login?message=Incorrect+Email+Or+Password!',
   })
+
 );
 
 //get register get
@@ -185,6 +193,7 @@ app.get("/logout", (req, res, next) => {
     if (err) {
       return next(err);
     } 
+    req.session.destroy();
     res.redirect("/");
   });
 });

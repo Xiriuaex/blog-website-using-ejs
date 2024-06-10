@@ -1,8 +1,5 @@
-
-<script>
-  console.log(user);
-</script>
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
+ 
+<nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
       <a class="navbar-brand" href="/">MyBlogs</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -16,16 +13,19 @@
           <li class="nav-item">
             <a class="nav-link" href="/contact">Contact Me</a>
           </li>
-          <%if (User) { %>
+          <%if (user) { %>
             <li class="nav-item">
               <a class="nav-link" href="/compose">Compose</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/logout">Log Out</a>
             </li>
-          <%} else if(!User){%>
+          <%} else if(!user){%>
           <li class="nav-item">
             <a class="nav-link" href="/login">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/register">SignUp</a>
           </li>
           <%}%>
         </ul>

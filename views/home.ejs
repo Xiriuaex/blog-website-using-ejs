@@ -1,41 +1,46 @@
-<%- include('partials/header') -%>
-<%- include('partials/navbar', { User: User }) -%>
+<%- include('partials/header', { user: isLoggedIn }) -%>
+<%- include('partials/navbar', { user: isLoggedIn }) -%>
 
 <script> 
-  async function likePost(id, isLiked) {  
-   
-    try {
-      const response = await fetch(`/posts/${id}/like`, {
-        method:"POST",
-        headers: {
-          'Content-Type': 'application/json'
-        },  
-        body: JSON.stringify({ liked: isLiked })
-      });
+
+  async function likePost(id, isLiked) { 
+    if('<%= isLoggedIn%>' ==="false") {
+      alert("please Log In");
+    } else {
+      try {
+        const response = await fetch(`/posts/${id}/like`, {
+          method:"POST",
+          headers: {
+            'Content-Type': 'application/json'
+          },  
+          body: JSON.stringify({ liked: isLiked })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to like post ${response}`);
+        }
+
+        const contentType = response.headers.get('content-type');
       
-      if (!response.ok) {
-        throw new Error(`Failed to like post ${response}`);
-      }
+        if (contentType && contentType.includes('application/json')) {
+          const data = await response.json();
+          
+          data.liked ? document.getElementById(`like-button-${id}`).classList.add('liked') : document.getElementById(`like-button-${id}`).classList.remove('liked'); 
 
-      const contentType = response.headers.get('content-type');
-     
-      if (contentType && contentType.includes('application/json')) {
-        const data = await response.json();
-        
-        data.liked ? document.getElementById(`like-button-${id}`).classList.add('liked') : document.getElementById(`like-button-${id}`).classList.remove('liked'); 
-
-        document.getElementById(`likes-count-${id}`).textContent = data.likes;
-        
-      } else { 
-        console.warn('Response is not JSON', response); 
+          document.getElementById(`likes-count-${id}`).textContent = data.likes;
+          
+        } else { 
+          console.warn('Response is not JSON', response); 
+        }
+      } catch (error) {
+        console.error('Error liking post:', error);
       }
-    } catch (error) {
-      console.error('Error liking post:', error);
     }
   }
 </script>
 
 <div class="box"> 
+
   <% if (posts) { %>
   <% posts.forEach(post => { %>
   <div class="card">
