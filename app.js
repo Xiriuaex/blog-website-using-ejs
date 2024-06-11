@@ -135,19 +135,11 @@ app.get("/", async (req,res) => {
     }));
     
     
-    let likedPosts = {};
-    
-    for (let post of mappedPosts) {
-      const liked = await Likes.findOne({ postId: post._id, userId: user });
-      likedPosts[post._id] = liked ? true : false;
-    };
-    
     res.render("home", {
       posts: mappedPosts, 
       user: user, 
       username: username, 
-      isLoggedIn,
-      Liked: likedPosts
+      isLoggedIn
     });
 
     }catch (err) {

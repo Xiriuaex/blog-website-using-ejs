@@ -2,7 +2,7 @@
 <%- include('partials/navbar', { user: isLoggedIn, name: username }) -%>
 
 <script>  
-  async function likePost(id, isLiked) { 
+  async function likePost(id) { 
     if('<%= isLoggedIn%>' ==="false") {
       alert("please Log In");
     } else {
@@ -11,8 +11,7 @@
           method:"POST",
           headers: {
             'Content-Type': 'application/json'
-          },  
-          body: JSON.stringify({ liked: isLiked })
+          }
         });
         
         if (!response.ok) {
@@ -23,11 +22,8 @@
       
         if (contentType && contentType.includes('application/json')) {
           const data = await response.json();
-          
-          data.Liked ? document.getElementById(`like-button-${id}`).classList.add('liked') : document.getElementById(`like-button-${id}`).classList.remove('liked'); 
-
           document.getElementById(`likes-count-${id}`).textContent = data.likes;
-          location.reload();
+     
         } else { 
           console.warn('Response is not JSON', response); 
         }
@@ -76,10 +72,9 @@
           <% }} %>
           <div class="like-box">
             <button 
-              class="heart <%= Liked ? 'liked' : '' %>" 
-              style="border:none;background:none;" 
+              class="heart" 
               id="like-button-<%= post._id %>" 
-              onclick="likePost('<%= post._id %>', '<%= Liked[post._id] %>')">
+              onclick="likePost('<%= post._id %>')">
               &#9829;
             </button> 
             <p id="likes-count-<%= post._id %>"><%= post.likes %></p>
