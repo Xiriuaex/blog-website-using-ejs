@@ -1,8 +1,7 @@
 <%- include('partials/header', { user: isLoggedIn }) -%>
-<%- include('partials/navbar', { user: isLoggedIn }) -%>
+<%- include('partials/navbar', { user: isLoggedIn, name: username }) -%>
 
-<script> 
-
+<script>  
   async function likePost(id, isLiked) { 
     if('<%= isLoggedIn%>' ==="false") {
       alert("please Log In");
@@ -25,10 +24,10 @@
         if (contentType && contentType.includes('application/json')) {
           const data = await response.json();
           
-          data.liked ? document.getElementById(`like-button-${id}`).classList.add('liked') : document.getElementById(`like-button-${id}`).classList.remove('liked'); 
+          data.Liked ? document.getElementById(`like-button-${id}`).classList.add('liked') : document.getElementById(`like-button-${id}`).classList.remove('liked'); 
 
           document.getElementById(`likes-count-${id}`).textContent = data.likes;
-          
+          location.reload();
         } else { 
           console.warn('Response is not JSON', response); 
         }
@@ -37,6 +36,21 @@
       }
     }
   }
+
+  async function deletePost(id) {
+    console.log("clicked") 
+      try {
+        await fetch(`/posts/${id}/delete`, {
+          method:"POST",
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        location.reload();
+      } catch (error) {
+        console.error('Error liking post:', error);
+      }
+    }
 </script>
 
 <div class="box"> 
@@ -50,9 +64,19 @@
         <p class="card-text"><%= post.post.substring(0,150)%></p>
         <div>
           <a href="/posts/<%= post._id%>" class="card-link" style="text-decoration: none; color: rgb(192, 162, 162)">Read More</a>
+          <% { if(isLoggedIn && username && (username.toString() === post.author.toString())) { %>
+            <button 
+              class="deletebtn"
+              id="like-button-<%= post._id %>" 
+              onclick="deletePost('<%= post._id %>')">
+              Delete Post
+            </button> 
+          <% } else { %>
+            <div></div>
+          <% }} %>
           <div class="like-box">
             <button 
-              class="heart <%= Liked[post._id] ? 'liked' : '' %>" 
+              class="heart <%= Liked ? 'liked' : '' %>" 
               style="border:none;background:none;" 
               id="like-button-<%= post._id %>" 
               onclick="likePost('<%= post._id %>', '<%= Liked[post._id] %>')">

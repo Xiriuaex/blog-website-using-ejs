@@ -80,6 +80,17 @@ body {
   color: #384646;
   margin-bottom: 7px;
 }
+
+.deletebtn {
+  color: #384646;
+  font-size: 15px;
+  border:none;
+  background:none;
+}
+
+.deletebtn:hover {
+  text-decoration: underline;
+}
 .login {
   position: relative;
   color: #384646;

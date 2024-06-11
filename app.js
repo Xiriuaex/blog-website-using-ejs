@@ -55,6 +55,48 @@ mongoose.connect(process.env.MONGODB_URI,
 .catch(err => console.error('MongoDB connection error:', err));
 
 
+//authentication using passport
+passport.use(
+  "local",
+  new Strategy(async function verify(username, password, cb) {
+    try {
+      const checkUser = await User.findOne({email: username});
+
+      if (checkUser) {
+        const storedHashedPassword = checkUser.password;
+        bcrypt.compare(password, storedHashedPassword, (err, valid) => {
+          if (err) {
+            console.error("Error comparing passwords:", err);
+            return cb(err);
+          } else {
+            if (valid) {
+              return cb(null, checkUser);
+            } else {
+              return cb(null, false);
+            }
+          }
+        });
+      } else {
+        return cb("User not found");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  })
+);
+passport.serializeUser((user, cb) => {
+  cb(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+      const user = await User.findById(id);
+      done(null, user);
+  } catch (err) {
+      done(err);
+  }
+});
+
 function isAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { 
     return next();
@@ -63,16 +105,19 @@ function isAuthenticated(req, res, next) {
   }
 };
 
+
+
 //get all posts
 app.get("/", async (req,res) => {
   const posts = await Post.find({}).populate('author', 'name');
   const user = req.session._id;  
+  let username = '';
   let isLoggedIn = false;
   if(req.isAuthenticated()){
-    console.log("oaky");
+    username = req.user.name;  
     isLoggedIn= true;
-  } else {
-    console.log("nope");
+  } else {  
+    console.log("not logged in");
   }
   let likesCount= {};
 
@@ -86,7 +131,7 @@ app.get("/", async (req,res) => {
         title: post.title,
         post: post.post, 
         likes: likesCount[post._id] || 0,
-        author: post.author ? post.author.name : "Unknown"
+        author: post.author ? post.author.name : "Unknown",
     }));
     
     
@@ -96,10 +141,11 @@ app.get("/", async (req,res) => {
       const liked = await Likes.findOne({ postId: post._id, userId: user });
       likedPosts[post._id] = liked ? true : false;
     };
-
+    
     res.render("home", {
       posts: mappedPosts, 
-      user: user,
+      user: user, 
+      username: username, 
       isLoggedIn,
       Liked: likedPosts
     });
@@ -253,6 +299,18 @@ app.post('/posts/:id/like', isAuthenticated, async(req, res) => {
     console.log(error);
     res.status(500).send("An error occurred while updating the like count");
   }  
+});
+
+app.post("/posts/:id/delete", isAuthenticated, async(req, res) => {
+  try {
+    const postId = req.params.id; 
+    const userId = req.user._id; 
+
+    await Post.deleteOne({_id: postId, author: userId}); 
+    res.redirect("/");
+  } catch (error) {
+    console.log("Error Deleting Post:", error); 
+  }
 })
 
 //about get
@@ -265,43 +323,7 @@ app.get("/contact", (req, res) => {
   res.render("contact");
 });
 
-//authentication using passport
-passport.use(
-  "local",
-  new Strategy(async function verify(username, password, cb) {
-    try {
-      const checkUser = await User.findOne({email: username});
 
-      if (checkUser) {
-        const storedHashedPassword = checkUser.password;
-        bcrypt.compare(password, storedHashedPassword, (err, valid) => {
-          if (err) {
-            console.error("Error comparing passwords:", err);
-            return cb(err);
-          } else {
-            if (valid) {
-              return cb(null, checkUser);
-            } else {
-              return cb(null, false);
-            }
-          }
-        });
-      } else {
-        return cb("User not found");
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  })
-);
-
-passport.serializeUser((user, cb) => {
-  cb(null, user);
-});
-
-passport.deserializeUser((user, cb) => {
-  cb(null, user);
-});
 
 //listening I guess...
 app.listen(4000, function () {
