@@ -45,8 +45,8 @@
   <% posts.forEach(post => { %>
   <div class="card">
     <div class="card-body"> 
-        <h5 class="card-title"><%= post.title%></h5>
-        <h6 class="card-subtitle mb-2 text-body-secondary"><%= post.author%></h6>
+        <h4 class="cardTitle"><%= post.title%></h4>
+        <h6 class="card-subtitle mb-4 text-body-secondary"><%= post.author%></h6>
         <p class="card-text"><%= post.post.substring(0,150)%></p>
         <div>
           <a href="/posts/<%= post._id%>" class="card-link" style="text-decoration: none; color: rgb(192, 162, 162)">Read More</a>
