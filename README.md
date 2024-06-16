@@ -4,3 +4,4 @@ This is a basic bloggin site:
 
 A basic project using tech like ejs, express and mongodb.
 
+I made this project for my college friends as a commission work 
